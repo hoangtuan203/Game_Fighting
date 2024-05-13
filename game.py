@@ -86,6 +86,7 @@ def play():
         # if name_entered:
         #     # Chuyển sang giao diện wait_enemy() và truyền tên người chơi đã nhập
         #     break
+        
 
         pygame.display.update()
 
