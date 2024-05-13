@@ -200,7 +200,7 @@ def healthbar(health,x,y):
     pygame.draw.rect(screen, RED, (x, y, 300 * ratio, 30))
 
 #----------------font--------------------------------------------------------------
-pixelfont=pygame.font.Font("VCR_OSD_MONO_1.001.ttf",30)
+pixelfont=pygame.font.Font("Atop-R99O3.ttf",30)
 
 
 #----------------PLAYERS--------------------------------------------------------------
