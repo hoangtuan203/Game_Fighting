@@ -5,26 +5,31 @@ HOST = '192.168.1.3'
 PORT = 5555
 
 ready_players = 0
+player_names = []
 lock = threading.Lock()
 
 def handle_client(conn, addr):
-    global ready_players
-    print(f"Connection from {addr}")
+    global ready_players, player_names
+    # print(f"Connection from {addr}")
     with conn:
         while True:
             data = conn.recv(1024).decode()
             if not data:
                 break
-            # print(f"Received: {data}")
             if data == 'check_ready_count':
                 with lock:
-                    response = str(ready_players)
+                    response = f"{ready_players}:{','.join(player_names)}"
                 conn.sendall(response.encode())
             else:
                 with lock:
-                    ready_players += 1
-                conn.sendall(data.encode())
-            print(data)
+                    if data.startswith("name:"):
+                        player_name = data[5:]
+                        player_names.append(player_name)
+                        ready_players += 1
+                    response = ",".join(player_names)
+                conn.sendall(response.encode())
+            # print(data)
+
 
 def main():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
