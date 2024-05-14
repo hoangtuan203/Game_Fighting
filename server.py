@@ -2,7 +2,7 @@ import socket
 import threading
 
 HOST = '192.168.1.3'  # Sử dụng địa chỉ IP công cộng của máy chủ
-PORT = 5555
+PORT = 8080
 MAX_CLIENTS = 2  # Số lượng kết nối tối đa cho phép
 
 clients = []
@@ -14,14 +14,13 @@ def check_ready_count():
 
 def handle_client(client_socket):
     global ready_count
-    while True:
-        try:
+    try:
+        while True:
             data = client_socket.recv(1024).decode()
             if not data:
                 break
-            print("Received:", data)
+            print("Received:", data)    
             # Xử lý dữ liệu nhận được từ client
-
 
             # Kiểm tra nếu client đã sẵn sàng
             print(data)
@@ -33,11 +32,10 @@ def handle_client(client_socket):
                     for client in clients:
                         client.sendall(b"check_ready_count")
                     print("Both players are ready, starting the game...")
-        except Exception as e:
-            print("Error:", e)
-            break
-        
-    client_socket.close()
+    except Exception as e:
+        print("Error:", e)
+    finally:
+        client_socket.close()
 
 def start_server():
     global ready_count
