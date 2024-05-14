@@ -3,7 +3,7 @@ import sys
 import socket
 from button import Button
 from server import HOST, PORT
-
+from GAMECODE import run_game
 pygame.init()
 SCREEN = pygame.display.set_mode((1920, 1080))
 pygame.display.set_caption("Menu")
@@ -20,17 +20,17 @@ def start_game():
     pygame.display.set_caption("Stress Fight")
     bg_image = pygame.image.load("img/bggame.jpg")
     screen.blit(bg_image, (0, 0))
-
 def connect_to_server(player_name):
     try:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client_socket.connect((HOST, PORT))
         client_socket.send(player_name.encode())
-        print("Connected to the server as Player", player_name)
-        return True  # Trả về True nếu kết nối thành công
+        # print("Connected to the server as Player", player_name)
+        return client_socket  # Trả về socket nếu kết nối thành công
     except Exception as e:
         print("Error:", e)
-        return False  # Trả về False nếu có lỗi kết nối
+        return None  # Trả về None nếu có lỗi kết nối
+
 def check_ready_count():
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -78,7 +78,6 @@ def play():
                         print("Name entered, connecting to server...")
                         wait_enemy()
                         return
-                 
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
@@ -95,12 +94,6 @@ def play():
 def wait_enemy():
     global ready_count
 
-    # if isinstance(player_names, str):  # Kiểm tra xem player_names là chuỗi hay không
-    #     player_names = [player_names]  # Nếu là chuỗi, chuyển thành danh sách
-
-    # if len(player_names) < 2:
-    #     player_names.append('')  # Nếu chỉ có một người chơi, thêm một chuỗi rỗng vào danh sách
-
     while True:
         PLAY_MOUSE_POS = pygame.mouse.get_pos()
         bg = pygame.image.load("img/waiting.jpg")
@@ -110,15 +103,10 @@ def wait_enemy():
         wait_rect = wait_text.get_rect(center=(960, 400))
         SCREEN.blit(wait_text, wait_rect)
 
-        # player1_text = get_font(30).render(f"Player 1: {player_names[0]}", True, (255, 255, 255))
-        # SCREEN.blit(player1_text, (100, 100))
-        # player2_text = get_font(30).render(f"Player 2: {player_names[1]}", True, (255, 255, 255))
-        # SCREEN.blit(player2_text, (100, 150))
-
         data = check_ready_count()
         if data.isdigit():
             ready_count = int(data)
-            print("Number of ready players:", ready_count)
+            # print("Number of ready players:", ready_count)
 
             if ready_count == 2:
                 wait_text = get_font(40).render("READY GAME...", True, (42, 231, 34))
@@ -132,6 +120,7 @@ def wait_enemy():
                 for event in pygame.event.get():
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         if START_BUTTON.checkForInput(PLAY_MOUSE_POS):
+                            run_game()
                             return
 
         for event in pygame.event.get():
@@ -167,6 +156,7 @@ def options():
                     main_menu()
 
         pygame.display.update()
+        
 
 def main_menu():
     while True:
@@ -204,6 +194,7 @@ def main_menu():
                     sys.exit()
 
         pygame.display.update()
+
 
 if __name__ == "__main__":
     main_menu()
