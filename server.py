@@ -1,7 +1,21 @@
 import socket
 import threading
 
-HOST = '192.168.1.3'
+def get_local_ip():
+    # Tạo một socket để lấy thông tin IP của máy tính local
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # Kết nối với một địa chỉ IP không tồn tại để lấy thông tin IP của máy tính local
+        s.connect(('10.255.255.255', 1))
+        local_ip = s.getsockname()[0]
+    except Exception:
+        local_ip = '127.0.0.1'  # Nếu không thể lấy được IP, sử dụng localhost
+    finally:
+        s.close()
+    return local_ip
+
+HOST = get_local_ip()  # Lấy địa chỉ IP của máy tính local
+
 PORT = 5555
 
 ready_players = 0
